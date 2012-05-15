@@ -16,6 +16,10 @@ const Color Color::kBlue = Color(0.0, 0.0, 1.0);
 const Color Color::kWhite = Color(1.0, 1.0, 1.0);
 const Color Color::kBlack = Color(0.0, 0.0, 0.0);
 
+Color Color::kGray(float a) {
+  return Color::kWhite.Multiply(a);
+}
+
 void Color::Print() const {
   cout << "{red:" << red << ",green:" << green << ",blue:" << blue << "}" << endl;
 }

@@ -27,6 +27,8 @@ public:
   Color MyAdd(const Color &c) const;
   Color MyDiv(const Color &c) const;
 
+  static Color kGray(float a);
+
   bool IsValid() const;
   bool IsBlack() const;
   bool IsTooLarge() const;

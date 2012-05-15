@@ -17,7 +17,7 @@
 #include "base/Ray.h"
 #include "base/Vec.h"
 
-const int PathTracingEngine::kMaxDepth = 5;
+const int PathTracingEngine::kMaxDepth = 8;
 #include <iostream>
 
 Vec light2 = Vec(0,-0.3,-1).Normalize();
@@ -40,9 +40,10 @@ Color PathTracingEngine::PathTracing(const Scene & scene, const Ray & ray,
     }
     Color diffuse_color = Color::kBlack;
     Color reflect_color = Color::kBlack;
+    Color refract_color = Color::kBlack;
     //Process diffusion
-    if(!m->diffusion.IsBlack()) {
-      Ray new_ray = GenRandomRay(inst.position.Add(inst.normal.Multiply(0.00001)), inst.normal);
+    if (!m->diffusion.IsBlack()) {
+      Ray new_ray = GenRandomRay(inst.position, inst.normal);
       Color new_color = PathTracing(scene, new_ray, depth + 1);
       float cosa = new_ray.direction.DotProduct(inst.normal);
       if (depth < kMaxDepth) { // Fixme
@@ -51,17 +52,23 @@ Color PathTracingEngine::PathTracing(const Scene & scene, const Ray & ray,
         diffuse_color = new_color.Modulate(m->diffusion);
       }
     }
-
     //Process reflection, just generate the reflect ray
-    if(!m->reflection.IsBlack()) {
+    if (!m->reflection.IsBlack()) {
       Vec reflect_direction = ray.direction.Add(inst.normal.Multiply(
           2 * ray.direction.Negate().DotProduct(inst.normal)));
-      Ray new_ray = Ray(inst.position.Add(inst.normal.Multiply(0.00001)), reflect_direction);
+      Ray new_ray = Ray(inst.position, reflect_direction);
       Color new_color = PathTracing(scene, new_ray, depth + 1);
       float cosa = new_ray.direction.DotProduct(inst.normal);
       reflect_color = new_color.Modulate(m->reflection).Multiply(cosa);
     }
-    ret = diffuse_color.Add(reflect_color);
+    //Process refraction, ignore the index of refraction. Fixme
+    if (!m->refraction.IsBlack()) {
+      Ray new_ray = Ray(inst.position, ray.direction);
+      Color new_color = PathTracing(scene, new_ray, depth + 1);
+      float cosa = new_ray.direction.DotProduct(inst.normal);
+      refract_color = new_color.Modulate(m->refraction).Multiply(cosa);
+    }
+    ret = diffuse_color.Add(reflect_color).Add(refract_color);
   }
   return ret;
 }
