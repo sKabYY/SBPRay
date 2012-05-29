@@ -15,7 +15,7 @@ class Vec;
 class PathTracingEngine {
 public:
   static const int kMaxDepth;
-  static Color PathTracing(const Scene & scene, const Ray & ray,int depth);
+  static Color PathTracing(const Scene & scene, const Ray & ray,int depth, float refractive_index);
   static Ray GenRandomRay(const Vec &position, const Vec &normal);
 
 private:

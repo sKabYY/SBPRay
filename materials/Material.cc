@@ -13,20 +13,28 @@ Material::Material() {
   reflection = Color::kBlack;
   refraction = Color::kBlack;
   emittance = Color::kBlack;
+  refractive_index = 1;
 }
 
 Material::Material(Color _diffusion, Color _reflection,
     Color _refraction, Color _emittance)
   :diffusion(_diffusion), reflection(_reflection),
- refraction(_refraction), emittance(_emittance) {
+   refraction(_refraction), emittance(_emittance), refractive_index(1) {
 
 }
 
 Material::Material(Color _diffusion, Color _reflection,
-    Color _refraction)
+    Color _refraction, float _refractive_index)
   :diffusion(_diffusion), reflection(_reflection),
- refraction(_refraction), emittance(Color::kBlack) {
+   refraction(_refraction), emittance(Color::kBlack),
+   refractive_index(_refractive_index) {
 
+}
+
+Material::Material(Color _diffusion, Color _reflection)
+    :diffusion(_diffusion), reflection(_reflection),
+     refraction(Color::kBlack), emittance(Color::kBlack),
+     refractive_index(1) {
 }
 
 Material::Material(Material & m)

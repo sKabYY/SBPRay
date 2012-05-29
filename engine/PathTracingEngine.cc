@@ -17,14 +17,14 @@
 #include "base/Ray.h"
 #include "base/Vec.h"
 
-const int PathTracingEngine::kMaxDepth = 8;
+const int PathTracingEngine::kMaxDepth = 5;
 #include <iostream>
 
 Vec light2 = Vec(0,-0.3,-1).Normalize();
 Color light_color2 = Color(0.5,0.5,0.5);
 
 Color PathTracingEngine::PathTracing(const Scene & scene, const Ray & ray,
-                                     int depth)
+                                     int depth, float refractive_index)
 {
   Color ret = Color::kBlack;
   if(depth > kMaxDepth) {
@@ -44,7 +44,7 @@ Color PathTracingEngine::PathTracing(const Scene & scene, const Ray & ray,
     //Process diffusion
     if (!m->diffusion.IsBlack()) {
       Ray new_ray = GenRandomRay(inst.position, inst.normal);
-      Color new_color = PathTracing(scene, new_ray, depth + 1);
+      Color new_color = PathTracing(scene, new_ray, depth + 1, refractive_index);
       float cosa = new_ray.direction.DotProduct(inst.normal);
       if (depth < kMaxDepth) { // Fixme
         diffuse_color = new_color.Modulate(m->diffusion).Multiply(cosa);
@@ -57,14 +57,14 @@ Color PathTracingEngine::PathTracing(const Scene & scene, const Ray & ray,
       Vec reflect_direction = ray.direction.Add(inst.normal.Multiply(
           2 * ray.direction.Negate().DotProduct(inst.normal)));
       Ray new_ray = Ray(inst.position, reflect_direction);
-      Color new_color = PathTracing(scene, new_ray, depth + 1);
+      Color new_color = PathTracing(scene, new_ray, depth + 1, refractive_index);
       float cosa = new_ray.direction.DotProduct(inst.normal);
       reflect_color = new_color.Modulate(m->reflection).Multiply(cosa);
     }
     //Process refraction, ignore the index of refraction. Fixme
     if (!m->refraction.IsBlack()) {
       Ray new_ray = Ray(inst.position, ray.direction);
-      Color new_color = PathTracing(scene, new_ray, depth + 1);
+      Color new_color = PathTracing(scene, new_ray, depth + 1, m->refractive_index);
       float cosa = new_ray.direction.DotProduct(inst.normal);
       refract_color = new_color.Modulate(m->refraction).Multiply(cosa);
     }

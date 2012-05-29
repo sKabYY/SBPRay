@@ -15,9 +15,10 @@ public:
   Material();
   Material(Material & m);
   Material(Color _diffusion, Color _reflection,
-      Color _refraction);
+      Color _refraction, float _refractive_index);
   Material(Color _diffusion, Color _reflection,
       Color _refraction, Color _emittance);
+  Material(Color _diffusion, Color _reflection);
   virtual ~Material();
   virtual bool IsLightSource() const;
   virtual Color get_emittance() const;
@@ -26,6 +27,7 @@ public:
   Color reflection;
   Color refraction;
   Color emittance;
+  float refractive_index;
 };
 
 #endif /* MATERIAL_H_ */
